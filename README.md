@@ -200,3 +200,4 @@ func main() {
 	fmt.Println("down")
 }
 ```
+# wp.Close() // 在bzsome/chaoGo基础上添加了手动关闭等待的work
