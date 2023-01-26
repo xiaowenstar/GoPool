@@ -4,29 +4,25 @@
 [![GoDoc](https://godoc.org/github.com/xiaowenstar/GoPool?status.svg)](https://godoc.org/github.com/xiaowenstar/GoPool)
 [![Mentioned in Awesome Go](https://awesome.re/mentioned-badge.svg)](https://github.com/avelino/awesome-go)
 
-## golang worker pool
 
-### [中文说明](README_cn.md)
+## golang worker pool ,线程池 , 工作池
+### [English](README_cn.md)
+- 并发限制goroutine池。
+- 限制任务执行的并发性，而不是排队的任务数。
+- 无论排队多少任务，都不会阻止提交任务。
+- 通过队列支持[queue](https://github.com/bzsometest/public/tree/master/myqueue)
 
-- Concurrency limiting goroutine pool. 
-- Limits the concurrency of task execution, not the number of tasks queued. 
-- Never blocks submitting tasks, no matter how many tasks are queued.
-- Support timeout
-- Support through security queues [queue](https://github.com/bzsometest/public/tree/master/myqueue)
+### golang 工作池公共库
 
+## 安装
 
-## Installation
-
-The simplest way to install the library is to run:
+安装最简单方法:
 
 ```
 $ go get github.com/xiaowenstar/GoPool
 ```
 
-
-### Support the maximum number of tasks, put them in the workpool and wait for them to be completed
-
-## Example
+### 支持最大任务数, 放到工作池里面 并等待全部完成
 
 ```
 package main
@@ -39,11 +35,11 @@ import (
 )
 
 func main() {
-	wp := workpool.New(10)     // Set the maximum number of threads
-	for i := 0; i < 20; i++ { // Open 20 requests 
+	wp := workpool.New(10)             //设置最大线程数
+	for i := 0; i < 20; i++ { //开启20个请求
 		ii := i
 		wp.Do(func() error {
-			for j := 0; j < 10; j++ { // 0-10 values per print
+			for j := 0; j < 10; j++ { //每次打印0-10的值
 				fmt.Println(fmt.Sprintf("%v->\t%v", ii, j))
 				time.Sleep(1 * time.Second)
 			}
@@ -55,11 +51,9 @@ func main() {
 	wp.Wait()
 	fmt.Println("down")
 }
-
 ```
 
-### Support for error return
-
+### 支持错误返回
 ```
 package main
 
@@ -71,14 +65,14 @@ import (
 )
 
 func main() {
-	wp := workpool.New(10)             // Set the maximum number of threads
-	for i := 0; i < 20; i++ { 
+	wp := workpool.New(10)             //设置最大线程数
+	for i := 0; i < 20; i++ { //开启20个请求
 		ii := i
 		wp.Do(func() error {
-			for j := 0; j < 10; j++ { // 0-10 values per print
+			for j := 0; j < 10; j++ { //每次打印0-10的值
 				fmt.Println(fmt.Sprintf("%v->\t%v", ii, j))
 				if ii == 1 {
-					return errors.Cause(errors.New("my test err")) // have err return
+					return errors.Cause(errors.New("my test err")) //有err 立即返回
 				}
 				time.Sleep(1 * time.Second)
 			}
@@ -95,7 +89,7 @@ func main() {
 	}
 ```
 
-### Supporting judgement of completion (non-blocking)
+### 支持判断是否完成 (非阻塞)
 
 ```
 package main
@@ -108,8 +102,8 @@ import (
 )
 
 func main() {
-	wp := workpool.New(5)              // Set the maximum number of threads
-	for i := 0; i < 10; i++ { 
+	wp := workpool.New(5)              //设置最大线程数
+	for i := 0; i < 10; i++ { //开启20个请求
 		//	ii := i
 		wp.Do(func() error {
 			for j := 0; j < 5; j++ { 
@@ -119,7 +113,7 @@ func main() {
 			return nil
 		})
 
-		fmt.Println(wp.IsDone())
+		fmt.Println(wp.IsDone())//判断是否完成
 	}
 	wp.Wait()
 	fmt.Println(wp.IsDone())
@@ -127,7 +121,7 @@ func main() {
 }
 ```
 
-### Support synchronous waiting for results
+### 支持同步等待结果
 
 ```
 package main
@@ -140,11 +134,11 @@ import (
 )
 
 func main() {
-	wp := workpool.New(5) // Set the maximum number of threads
-	for i := 0; i < 10; i++ { 
+	wp := workpool.New(5)              //设置最大线程数
+	for i := 0; i < 10; i++ { //开启20个请求
 		ii := i
 		wp.DoWait(func() error {
-			for j := 0; j < 5; j++ { 
+			for j := 0; j < 5; j++ {
 				fmt.Println(fmt.Sprintf("%v->\t%v", ii, j))
 				// if ii == 1 {
 				// 	return errors.New("my test err")
@@ -166,7 +160,7 @@ func main() {
 }
 ```
 
-### Support timeout exit
+### 支持超时退出
 
 ```
 package main
@@ -179,9 +173,9 @@ import (
 )
 
 func main() {
-	wp := workpool.New(5)              // Set the maximum number of threads
-		wp.SetTimeout(time.Millisecond) // set max timeout
-	for i := 0; i < 10; i++ { 
+	wp := workpool.New(5)              // 设置最大线程数
+		wp.SetTimeout(time.Millisecond) // 设置超时时间
+	for i := 0; i < 10; i++ { // 开启20个请求
 		ii := i
 		wp.DoWait(func() error {
 			for j := 0; j < 5; j++ {
